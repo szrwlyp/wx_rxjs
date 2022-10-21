@@ -1,7 +1,6 @@
 import { Observable, retry, timer } from "rxjs";
 import { HttpAttribute, HttpParameter } from "../types/http";
 
-// http://192.168.31.4:8080/api/v1/wxLogin
 // https://vpascare.com/api/
 export default class Http implements HttpAttribute {
   public base_url = "http://192.168.31.4:8080/api/";
