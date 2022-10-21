@@ -28,7 +28,7 @@ export default class Http implements HttpAttribute {
         method: "POST",
         header,
         success(res) {
-          console.warn("接口请求成功：", res);
+          // console.warn("接口请求成功：", res);
 
           if (res.statusCode == 200) {
             subscriber.next(res);
@@ -39,39 +39,27 @@ export default class Http implements HttpAttribute {
           }
         },
         fail(err) {
-          console.warn("接口请求失败：", err);
+          // console.warn("接口请求失败：", err);
           subscriber.error(err);
           subscriber.complete();
         },
       });
-    })
-      .pipe(
-        retry({
-          count: 2,
-          delay: (_error, retryCount) => {
-            console.warn(
-              `第${retryCount}次重试。重试的时间间隔${Math.pow(
-                2,
-                retryCount
-              )}秒`
-            );
+    }).pipe(
+      retry({
+        count: 2,
+        delay: (_error, retryCount) => {
+          console.warn(
+            `第${retryCount}次重试。重试的时间间隔${Math.pow(2, retryCount)}秒`
+          );
 
-            const random_number_milliseconds = Math.floor(Math.random() * 1000);
-            console.log(
-              Math.pow(2, retryCount) * 1000 + random_number_milliseconds
-            );
-            // 返回再次执行的通知函数（必须）
-            return timer(Math.pow(2, retryCount) * 1000);
-          },
-        })
-      )
-      .subscribe({
-        next: (res) => {
-          console.log(res);
+          const random_number_milliseconds = Math.floor(Math.random() * 1000);
+          console.log(
+            Math.pow(2, retryCount) * 1000 + random_number_milliseconds
+          );
+          // 返回再次执行的通知函数（必须）
+          return timer(Math.pow(2, retryCount) * 1000);
         },
-        error: (err) => {
-          console.log(err);
-        },
-      });
+      })
+    );
   }
 }

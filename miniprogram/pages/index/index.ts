@@ -25,98 +25,72 @@ import {
   throwError,
   finalize,
   forkJoin,
+  switchMap,
+  iif,
 } from "rxjs";
 
-class StorageServiceService {
-  params: string;
-  constructor(params: string) {
-    this.params = params;
-  }
-  getRxjsData() {
-    let that = this;
-
-    return new Observable((subscriber) => {
-      setTimeout(() => {
-        // console.log(that.params);
-        if (that.params === "p2") {
-          subscriber.error(`${that.params} error`);
-          subscriber.complete();
-        } else {
-          subscriber.next(that.params);
-          subscriber.complete();
-        }
-      }, 2000);
-    });
-  }
-}
-
-import { wxLogin, locationWxLogin } from "../../module/index";
+import {
+  locationWxLogin,
+  getUserData3,
+  getUserData2,
+  getUserData1,
+} from "../../module/index";
+import { getWxCode, login } from "../../utils/wx_api_fun";
 
 Page({
   data: {
     motto: "Hello World",
   },
+  userLoginData: {},
 
   onLoad() {},
   onShow() {
     console.log(wx.createSelectorQuery().select(".npl-intro"));
 
-    // let observableData_1 = new StorageServiceService("p1").getRxjsData();
-    // let observableData_2 = new StorageServiceService("p2").getRxjsData();
-    // let observableData_3 = new StorageServiceService("p3").getRxjsData();
+    this.userLogin();
 
-    // let observable = forkJoin([
-    //   observableData_1,
-    //   observableData_2,
-    //   observableData_3,
-    // ]).pipe(
-    //   finalize(() => {
-    //     console.log("接口全部完成或部分接口报错");
-    //   })
-    // );
-    // console.log(observable);
-    // observable.subscribe({
-    //   next: (res) => {
+    // this.userLoginData.subscribe({
+    //   next: (res: any) => {
     //     console.log(res);
     //   },
-    //   error: (err) => {
-    //     console.log(err);
-    //   },
-    //   complete: () => {
-    //     console.log("complete");
-    //   },
     // });
+  },
 
-    // const source = interval(1000);
-    // const result = source.pipe(
-    //   mergeMap((val) => (val > 5 ? throwError(() => "Error!") : of(val))),
-    //   retry({
-    //     count: 2,
-    //     delay: (_error, retryCount) => {
-    //       console.log(_error);
-    //       console.warn("重试次数", retryCount);
-    //       console.warn(Math.pow(2, retryCount) * 1000);
-    //       // 返回再次执行的通知函数（必须）
-    //       return timer(Math.pow(2, retryCount) * 1000);
-    //     },
-    //   })
-    // );
+  // 微信登录
+  userLogin() {
+    let that = this;
 
-    // result.subscribe({
-    //   next: (value) => console.log(value),
-    //   error: (err) => console.log(`${err}: Retried 2 times then quit!`),
-    // });
+    login().subscribe({
+      next: (res) => {
+        console.log(res);
+        that.deom1();
+      },
+      error: (err) => {
+        console.log(err);
+      },
+    });
+  },
+  // 并行请求多个接口
+  deom1() {
+    let observable = forkJoin([
+      getUserData1("getUserData1数据"),
+      getUserData2("getUserData2数据"),
+      getUserData3("getUserData3数据"),
+    ]).pipe(
+      finalize(() => {
+        console.log("接口全部完成或部分接口报错");
+      })
+    );
 
-    // 登录
-    wx.login({
-      success: (res) => {
-        console.log(res.code);
-        let p = {
-          appid: "wx546cf0535ad27d74",
-          code: res.code,
-        };
-        locationWxLogin(p);
-        // wxLogin(p);
+    observable.subscribe({
+      next: (res) => {
+        console.log(res);
+      },
+      error: (err) => {
+        console.log(err);
+      },
+      complete: () => {
+        console.log("complete");
       },
     });
   },
