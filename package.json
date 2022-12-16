@@ -7,8 +7,8 @@
   "author": "",
   "license": "",
   "dependencies": {
-    "@reactivex/rxjs": "^6.6.7",
-    "rxjs": "^7.5.7"
+    "rxjs": "^7.5.7",
+    "westore": "^0.1.9"
   },
   "devDependencies": {
     "miniprogram-api-typings": "^2.8.3-1"

@@ -1,5 +1,5 @@
 import { Observable, switchMap, from } from "rxjs";
-import { locationWxLogin } from "../module/index";
+import { wxLogin } from "../module/index";
 
 // 获取微信code
 export function getWxCode() {
@@ -24,7 +24,7 @@ export function login() {
   return getWxCode().pipe(
     switchMap((code) =>
       from(
-        locationWxLogin({
+        wxLogin({
           appid: "wx546cf0535ad27d74",
           code,
         })
