@@ -1,21 +1,30 @@
-import Http from "../http";
-import { HttpParameter, HttpMethod } from "../http/types";
+import Http from "../http/index";
+import { HttpParameter } from "../http/types";
 
-export function wxLogin(data: any) {
+export function login(data: any) {
   console.log("code", data);
   let params: HttpParameter = {
     data,
-    url: "v1/wxLogin",
-    method: HttpMethod.POST,
+    url: "wxService/wxLogin",
+    method: "POST",
+  };
+  return new Http(params).request();
+}
+export function getSubscribeDevices(data?: any) {
+  let params: HttpParameter = {
+    data,
+    url: "wxSubscribeService/getSubscribeDevices",
+    method: "POST",
   };
   return new Http(params).request();
 }
 
-export function locationWxLogin(data: any) {
+// deviceService/getPeripheralTypes
+export function getPeripheralTypes(data?: any) {
   let params: HttpParameter = {
     data,
-    url: "v1/locationWxLogin",
-    method: HttpMethod.POST,
+    url: "deviceService/getPeripheralTypes",
+    method: "POST",
   };
   return new Http(params).request();
 }

@@ -2,7 +2,7 @@
 // 获取应用实例
 const app = getApp<IAppOption>();
 
-import userStore from "../../stores/user-store";
+import userStore from "../../stores/demo/user-store";
 
 Page({
   data: userStore.data,

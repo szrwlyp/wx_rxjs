@@ -1,10 +1,14 @@
-import { Observable, retry, timer } from "rxjs";
-import { HttpAttribute, HttpParameter, HttpMethod } from "./types";
+import { Observable, retry, timer, repeat } from "rxjs";
+import { User } from "../models/demo/user";
+import { BASE_URL } from "../config/index";
+import { HttpAttribute, HttpParameter, HttpMethod, HttpMethod1 } from "./types";
 
 /**
  * Http状态码有：1xx，2xx，3xx，4xx，5xx。
  * 根据状态码第一个字符来执行相应的函数。函数内部还能具体，比如：403，404等等。
  */
+// 未登录
+const NotLogin = -3;
 const HttpStatus = new Map([
   [
     "1",
@@ -16,8 +20,24 @@ const HttpStatus = new Map([
   [
     "2",
     (subscriber: any, res: any) => {
-      subscriber.next(res);
-      subscriber.complete();
+      console.log(res);
+
+      if (res.code === 0) {
+        subscriber.next(res);
+        subscriber.complete();
+      } else if (res.code === NotLogin) {
+        let userModels = new User();
+        userModels.wxLogin().subscribe({
+          next: (res) => {
+            console.log(res);
+            subscriber.error("用户未登录");
+          },
+          error: (err) => {
+            subscriber.next(err);
+            subscriber.complete();
+          },
+        });
+      }
     },
   ],
   [
@@ -50,12 +70,14 @@ const HttpStatus = new Map([
   ],
 ]);
 
+console.log(BASE_URL());
+
 // https://vpascare.com/api/
 export default class Http {
-  private base_url = "http://192.168.31.4:8080/api/";
+  private base_url = BASE_URL();
   private url = "";
   private data = {};
-  private method = HttpMethod.GET;
+  private method: HttpMethod = "GET";
   private header = {
     "content-type": "application/json",
   };
@@ -71,7 +93,7 @@ export default class Http {
     return new Observable((subscriber) => {
       wx.request({
         url: base_url + url,
-        data,
+        data: { ...data, sessionid: wx.getStorageSync("sessionId") },
         timeout: 30000,
         method,
         header,
@@ -82,9 +104,9 @@ export default class Http {
             firstStr = statusToString.charAt(0);
 
           if (HttpStatus.has(firstStr)) {
-            HttpStatus.get(firstStr)!(subscriber, res);
+            HttpStatus.get(firstStr)!(subscriber, res.data);
           } else {
-            HttpStatus.get("error")!(subscriber, res);
+            HttpStatus.get("error")!(subscriber, res.data);
           }
         },
         fail(err) {

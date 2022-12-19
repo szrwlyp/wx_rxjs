@@ -1,5 +1,5 @@
 import { Store } from "westore";
-import { User, UserOptions } from "../models/user";
+import { User, UserOptions } from "../../models/demo/user";
 
 class UserStore extends Store {
   options: UserOptions | undefined;
@@ -8,22 +8,27 @@ class UserStore extends Store {
     super();
     this.options = options;
     this.data = {
-      motto: "",
+      motto: "1111",
       userInfo: {},
     };
 
     this.user = new User({
       onUserInfoLoaded: () => {
+        console.log(this.user);
         this.data.motto = this.user.motto;
         this.data.userInfo = this.user.userInfo;
         console.log(this.user.userInfo);
-        this.update("userPage");
+        this.update();
+        // this.update("userPage");
       },
     });
+    console.log(this.user);
   }
 
-  getUserProfile() {
-    this.user.getUserProfile();
+  async getUserProfile() {
+    let user: any = await this.user.getUserProfile1();
+    this.data.userInfo = user.userInfo;
+    this.update();
   }
 }
 

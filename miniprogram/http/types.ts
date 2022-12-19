@@ -1,7 +1,7 @@
 /**
  * http请求方法枚举
  */
-export enum HttpMethod {
+export enum HttpMethod1 {
   GET = "GET",
   get = "GET",
   POST = "POST",
@@ -12,6 +12,7 @@ export enum HttpMethod {
   put = "PUT",
 }
 
+export type HttpMethod = "GET" | "POST" | "DELETE" | "PUT";
 export interface HttpAttribute {
   base_url: string;
   url: string;
@@ -25,4 +26,10 @@ export interface HttpParameter {
   data: any;
   url: string;
   method: HttpMethod;
+}
+
+export interface HttpResponseType {
+  code?: string;
+  data?: object;
+  msg?: string;
 }
