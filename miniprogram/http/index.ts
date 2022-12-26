@@ -1,7 +1,7 @@
-import { Observable, retry, timer, repeat } from "rxjs";
+import { Observable, retry, timer, delay } from "rxjs";
 import { User } from "../models/demo/user";
 import { BASE_URL } from "../config/index";
-import { HttpAttribute, HttpParameter, HttpMethod, HttpMethod1 } from "./types";
+import { HttpAttribute, HttpParameter, HttpMethod } from "./types";
 
 /**
  * Http状态码有：1xx，2xx，3xx，4xx，5xx。
@@ -9,6 +9,7 @@ import { HttpAttribute, HttpParameter, HttpMethod, HttpMethod1 } from "./types";
  */
 // 未登录
 const NotLogin = -3;
+let NotLoginNum = 0;
 const HttpStatus = new Map([
   [
     "1",
@@ -26,17 +27,23 @@ const HttpStatus = new Map([
         subscriber.next(res);
         subscriber.complete();
       } else if (res.code === NotLogin) {
-        let userModels = new User();
-        userModels.wxLogin().subscribe({
-          next: (res) => {
-            console.log(res);
-            subscriber.error("用户未登录");
-          },
-          error: (err) => {
-            subscriber.next(err);
-            subscriber.complete();
-          },
-        });
+        ++NotLoginNum;
+        if (NotLoginNum === 1) {
+          let userModels = new User();
+          userModels.wxLogin().subscribe({
+            next: (res) => {
+              console.log(res);
+              subscriber.error("用户未登录");
+              NotLoginNum = 0;
+            },
+            error: (err) => {
+              subscriber.next(err);
+              subscriber.complete();
+            },
+          });
+        } else {
+          subscriber.error();
+        }
       }
     },
   ],

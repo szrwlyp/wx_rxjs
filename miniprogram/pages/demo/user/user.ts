@@ -3,6 +3,7 @@
 const app = getApp<IAppOption>();
 
 import userStore from "../../../stores/demo/user-store";
+import meStore from "../../../stores/demo/me-store";
 
 Page({
   data: userStore.data,
@@ -16,8 +17,12 @@ Page({
     console.log(userStore);
     // userStore.bind("userPage", this);
     userStore.bind(this);
+    meStore.bind("me", this);
   },
-  onShow() {},
+  onShow() {
+    meStore.getData();
+    meStore.getTypeData();
+  },
 
   getUserProfile() {
     userStore.getUserProfile();

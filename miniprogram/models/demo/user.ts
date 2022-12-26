@@ -10,7 +10,7 @@ import {
   map,
 } from "rxjs";
 import { APP_ID } from "../../config/index";
-import { login } from "../../module/index";
+import { login } from "../../api/index";
 
 export interface UserOptions {
   onUserInfoLoaded?: () => void;
@@ -20,13 +20,11 @@ export class User {
   motto: string;
   userInfo: Partial<WechatMiniprogram.UserInfo>;
   options: UserOptions;
-  sessionId: string;
   userLoginInfo: object;
   constructor(options?: UserOptions) {
     this.motto = "Hello World";
     this.userInfo = {};
     this.options = options as UserOptions;
-    this.sessionId = wx.getStorageSync("sessionId");
     this.userLoginInfo = {};
   }
 
@@ -75,19 +73,18 @@ export class User {
   }
 
   wxLogin() {
-    let that = this;
+    let that = this,
+      sessionId = wx.getStorageSync("sessionId");
     return iif(
-      () => (that.sessionId ? true : false),
-      of(that.sessionId),
+      () => (sessionId ? true : false),
+      of(sessionId),
       defer(() =>
         that.getWxCode().pipe(
           switchMap((code) =>
-            from(
-              login({
-                appid: APP_ID,
-                code,
-              })
-            ).pipe(
+            login({
+              appid: APP_ID,
+              code,
+            }).pipe(
               map((res: any) => {
                 let { code, data } = res;
                 console.log(res);

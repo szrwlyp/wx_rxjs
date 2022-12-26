@@ -1,10 +1,15 @@
 // app.ts
+
+import { User } from "./models/demo/user";
+const user = new User();
 App<IAppOption>({
   globalData: {},
   onLaunch() {
-    // 展示本地存储能力
-    const logs = wx.getStorageSync("logs") || [];
-    logs.unshift(Date.now());
-    wx.setStorageSync("logs", logs);
+    // console.log(user);
+    // user.wxLogin().subscribe({
+    //   next: (res) => {
+    //     console.log(res);
+    //   },
+    // });
   },
 });

@@ -1,5 +1,6 @@
 import { User } from "./user";
-import { getSubscribeDevices, getPeripheralTypes } from "../../module/index";
+import { getSubscribeDevices, getPeripheralTypes } from "../../api/index";
+import { forkJoin } from "rxjs";
 
 export interface MeOptions {
   onMeInfoLoaded: () => void;
@@ -19,6 +20,12 @@ export class Me {
 
   getDeviceList() {
     let that = this;
+
+    // forkJoin([getSubscribeDevices(), getPeripheralTypes()]).subscribe({
+    //   next: (res) => {
+    //     console.log(res);
+    //   },
+    // });
 
     getSubscribeDevices().subscribe({
       next: (res: any) => {
